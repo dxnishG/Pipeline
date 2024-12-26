@@ -6,7 +6,7 @@ variable "region" {
 
 variable "repository_name" {
   description = "Name of the ECR repository"
-  default     = "sample-repo7"
+  default     = "sample-repo8"
 }
 
 variable "ecs_service_name" {
@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "example" {
 
 # Create Application Load Balancer
 resource "aws_lb" "example" {
-  name               = "my-alb7"
+  name               = "my-alb8"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.example.id]
@@ -135,7 +135,7 @@ resource "aws_lb" "example" {
   enable_cross_zone_load_balancing = true
 
   tags = {
-    Name = "my-alb7"
+    Name = "my-alb8"
   }
 }
 
@@ -173,9 +173,13 @@ resource "aws_lb_listener" "example" {
   }
 }
 
-# ECS Service Resource
+resource "random_id" "ecs_service_suffix" {
+  byte_length = 8
+}
+
+// ECS Service Resource
 resource "aws_ecs_service" "example" {
-  name            = var.ecs_service_name
+  name            = "${var.ecs_service_name}-${random_id.ecs_service_suffix.hex}"
   cluster         = aws_ecs_cluster.example.id
   task_definition = aws_ecs_task_definition.example.arn
   desired_count   = 1
@@ -183,7 +187,7 @@ resource "aws_ecs_service" "example" {
 
   network_configuration {
     subnets          = [aws_subnet.example_1.id, aws_subnet.example_2.id]
-    security_groups = [aws_security_group.example.id]
+    security_groups  = [aws_security_group.example.id]
     assign_public_ip = true
   }
 
@@ -196,7 +200,7 @@ resource "aws_ecs_service" "example" {
   depends_on = [aws_lb.example, aws_ecs_task_definition.example]
 }
 
-# Create S3 Bucket for input data with ACL set to private
+// Create S3 Bucket for input data with ACL set to private
 resource "aws_s3_bucket" "input_bucket" {
   bucket = "my-input-bucket-${random_id.bucket_suffix.hex}"
   acl    = "private"
