@@ -6,7 +6,7 @@ variable "region" {
 
 variable "repository_name" {
   description = "Name of the ECR repository"
-  default     = "sample-repo6"
+  default     = "sample-repo7"
 }
 
 variable "ecs_service_name" {
@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "example" {
 
 # Create Application Load Balancer
 resource "aws_lb" "example" {
-  name               = "my-alb6"
+  name               = "my-alb7"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.example.id]
@@ -135,7 +135,7 @@ resource "aws_lb" "example" {
   enable_cross_zone_load_balancing = true
 
   tags = {
-    Name = "my-alb6"
+    Name = "my-alb7"
   }
 }
 
