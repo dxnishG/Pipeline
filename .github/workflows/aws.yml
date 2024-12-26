@@ -1,0 +1,74 @@
+name: Deploy to Amazon
+
+on:
+  workflow_dispatch:  # This allows manual triggering from GitHub UI
+
+env:
+  AWS_REGION: us-east-1                   # ✅ AWS Region (Update if different)
+  ECR_REPOSITORY: sample-repo6             # ✅ Your ECR repository name
+  ECS_SERVICE: my-ecs-service              # ✅ Your ECS Service Name
+  ECS_CLUSTER: my-ecs-cluster              # ✅ Your ECS Cluster Name
+  ECS_TASK_DEFINITION: .aws/task-definition.json # ✅ Path to your ECS Task Definition file
+  CONTAINER_NAME: my-container             # ✅ Container name in your ECS task definition
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-prod:
+    name: Deploy to Amazon ECS - Production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, Tag, and Push Docker Image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "Building Docker image..."
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          echo "Pushing Docker image to ECR..."
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update ECS Task Definition with New Image
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
+
+      - name: Verify Deployment
+        run: |
+          echo "Deployment to Amazon ECS completed successfully!"
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v1.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
