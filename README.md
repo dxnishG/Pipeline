@@ -35,7 +35,7 @@ The CI/CD pipeline is implemented using GitHub Actions and includes:
 
 - AWS credentials are stored as GitHub secrets.
 - SonarQube server and token are configured as GitHub secrets.
-- The project uses the `us-east-1` region by default.
+- The project uses the `ap-southeast-1` region by default.
 
 ## Usage
 
