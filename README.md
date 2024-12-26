@@ -1,5 +1,3 @@
-# Random01
-
 ## Architecture
 
 This project sets up a cloud infrastructure and CI/CD pipeline for a web application with two main components: Development and Batch Job.
