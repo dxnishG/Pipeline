@@ -37,7 +37,7 @@ resource "aws_internet_gateway" "example" {
   }
 }
 
-# Create First Subnet (in AZ ap-southeast-1a)
+# Create Subnets
 resource "aws_subnet" "example_1" {
   vpc_id                  = aws_vpc.example.id
   cidr_block              = "10.0.1.0/24"
@@ -48,7 +48,6 @@ resource "aws_subnet" "example_1" {
   }
 }
 
-# Create Second Subnet (in AZ ap-southeast-1b)
 resource "aws_subnet" "example_2" {
   vpc_id                  = aws_vpc.example.id
   cidr_block              = "10.0.2.0/24"
@@ -69,14 +68,14 @@ resource "aws_security_group" "example" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow traffic from any IP
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]  # Allow all outbound traffic
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
@@ -133,7 +132,6 @@ resource "aws_lb" "example" {
   security_groups    = [aws_security_group.example.id]
   subnets            = [aws_subnet.example_1.id, aws_subnet.example_2.id]
   enable_deletion_protection = false
-
   enable_cross_zone_load_balancing = true
 
   tags = {
@@ -141,14 +139,13 @@ resource "aws_lb" "example" {
   }
 }
 
-# Create Target Group with unique name (target type set to 'ip')
+# Create Target Group with unique name
 resource "aws_lb_target_group" "example" {
   name     = "my-target-group-${random_id.unique_id.hex}"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.example.id
   
-  # Set the target type to 'ip' for awsvpc network mode
   target_type = "ip"
 
   health_check {
@@ -170,7 +167,6 @@ resource "aws_lb_listener" "example" {
   port              = 80
   protocol          = "HTTP"
 
-  # Add a rule to forward traffic to the target group
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.example.arn
@@ -200,23 +196,19 @@ resource "aws_ecs_service" "example" {
   depends_on = [aws_lb.example, aws_ecs_task_definition.example]
 }
 
-# Create S3 Buckets for input and output data
+# Create S3 Bucket for input data with ACL set to private
 resource "aws_s3_bucket" "input_bucket" {
   bucket = "my-input-bucket-${random_id.bucket_suffix.hex}"
+  acl    = "private"
 }
 
 resource "random_id" "bucket_suffix" {
   byte_length = 8
 }
 
-resource "aws_s3_bucket_acl" "input_bucket_acl" {
-  bucket = aws_s3_bucket.input_bucket.bucket
-  acl    = "public-read"
-}
-
-# IAM Role for CodeBuild
+# IAM Role for CodeBuild with random suffix
 resource "aws_iam_role" "codebuild_role" {
-  name = "codebuild-role"
+  name = "codebuild-role-${random_id.role_suffix.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -236,9 +228,13 @@ resource "aws_iam_role" "codebuild_role" {
   }
 }
 
-# IAM Policy for CodeBuild
+resource "random_id" "role_suffix" {
+  byte_length = 8
+}
+
+# IAM Policy for CodeBuild with random suffix
 resource "aws_iam_policy" "codebuild_policy" {
-  name        = "codebuild-policy"
+  name        = "codebuild-policy-${random_id.policy_suffix.hex}"
   description = "Policy for CodeBuild"
   policy      = jsonencode({
     Version = "2012-10-17",
@@ -263,6 +259,10 @@ resource "aws_iam_policy" "codebuild_policy" {
       }
     ]
   })
+}
+
+resource "random_id" "policy_suffix" {
+  byte_length = 8
 }
 
 # Attach IAM Policy to CodeBuild Role
