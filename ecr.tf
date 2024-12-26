@@ -1,7 +1,7 @@
 # Variables
 variable "region" {
   description = "AWS region"
-  default     = "us-east-1"
+  default     = "ap-southeast-1"
 }
 
 variable "repository_name" {
@@ -37,22 +37,22 @@ resource "aws_internet_gateway" "example" {
   }
 }
 
-# Create First Subnet (in AZ us-east-1a)
+# Create First Subnet (in AZ ap-southeast-1a)
 resource "aws_subnet" "example_1" {
   vpc_id                  = aws_vpc.example.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
+  availability_zone       = "ap-southeast-1a"
   map_public_ip_on_launch = true
   tags = {
     Name = "my-subnet-1"
   }
 }
 
-# Create Second Subnet (in AZ us-east-1b)
+# Create Second Subnet (in AZ ap-southeast-1b)
 resource "aws_subnet" "example_2" {
   vpc_id                  = aws_vpc.example.id
   cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1b"
+  availability_zone       = "ap-southeast-1b"
   map_public_ip_on_launch = true
   tags = {
     Name = "my-subnet-2"

@@ -4,7 +4,7 @@ on:
   push:  # This triggers automatically on every push to the repository
 
 env:
-  AWS_REGION: us-east-1                   # ✅ AWS Region (Update if different)
+  AWS_REGION: ap-southeast-1                   # ✅ AWS Region (Update if different)
   ECR_REPOSITORY: sample-repo6             # ✅ Your ECR repository name
   ECS_SERVICE: my-ecs-service              # ✅ Your ECS Service Name
   ECS_CLUSTER: my-ecs-cluster              # ✅ Your ECS Cluster Name
