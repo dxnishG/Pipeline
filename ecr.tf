@@ -202,21 +202,16 @@ resource "aws_ecs_service" "example" {
 
 # Create S3 Buckets for input and output data
 resource "aws_s3_bucket" "input_bucket" {
-  bucket = "my-input-bucket"
-  acl    = "private"
-
-  tags = {
-    Name = "my-input-bucket"
-  }
+  bucket = "my-input-bucket-${random_id.bucket_suffix.hex}"
 }
 
-resource "aws_s3_bucket" "output_bucket" {
-  bucket = "my-output-bucket"
-  acl    = "private"
+resource "random_id" "bucket_suffix" {
+  byte_length = 8
+}
 
-  tags = {
-    Name = "my-output-bucket"
-  }
+resource "aws_s3_bucket_acl" "input_bucket_acl" {
+  bucket = aws_s3_bucket.input_bucket.bucket
+  acl    = "public-read"
 }
 
 # IAM Role for CodeBuild
