@@ -56,7 +56,7 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64
           JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64
-          PATH: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64/bin:$PATH
+          PATH: /usr/local/bin:/usr/bin:/bin:/opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64/bin:$PATH
           SONAR_SCANNER_OPTS: "-Xmx1024m"
 
       - name: Login to Amazon ECR
