@@ -1,25 +1,44 @@
-# Variables
+# AWS Region
 variable "region" {
   description = "AWS region"
+  type        = string
   default     = "ap-southeast-1"
 }
 
+# ECR Repository Name
 variable "repository_name" {
   description = "Name of the ECR repository"
+  type        = string
+  default     = "My-ECR"
 }
 
+# ECS Service Name
 variable "ecs_service_name" {
   description = "ECS Service Name"
+  type        = string
   default     = "my-ecs-service"
 }
 
+# Deployment Environment
 variable "environment" {
   description = "Deployment environment (e.g., prod, pre-prod)"
+  type        = string
 }
 
-variable "image_tag" {
-  description = "Tag of the Docker image"
+# Application Load Balancer Name
+variable "alb_name" {
+  description = "Name of the Application Load Balancer"
+  type        = string
+  default     = "my-alb"
 }
+
+# Docker Image Tag
+variable "image_tag" {
+  description = "Tag of the Docker image (e.g., v1.0.0). Use 'latest' only for development purposes."
+  type        = string
+  default     = "latest"
+}
+
 
 # Provider Configuration
 provider "aws" {
@@ -133,7 +152,7 @@ resource "aws_ecs_task_definition" "example" {
 
 # Create Application Load Balancer
 resource "aws_lb" "example" {
-  name               = "my-alb8"
+  name               = "${var.alb_name}-${var.environment}"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.example.id]
@@ -142,7 +161,7 @@ resource "aws_lb" "example" {
   enable_cross_zone_load_balancing = true
 
   tags = {
-    Name = "my-alb8"
+    Name = "${var.alb_name}-${var.environment}"
   }
 }
 
