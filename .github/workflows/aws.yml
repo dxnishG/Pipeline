@@ -1,15 +1,15 @@
 name: Deploy to Amazon
 
 on:
-  push:  # This triggers automatically on every push to the repository
+  push:
 
 env:
-  AWS_REGION: ap-southeast-1                   # ✅ AWS Region (Update if different)
-  ECR_REPOSITORY: sample-repo8             # ✅ Your ECR repository name
-  ECS_SERVICE: my-ecs-service              # ✅ Your ECS Service Name
-  ECS_CLUSTER: my-ecs-cluster              # ✅ Your ECS Cluster Name
-  ECS_TASK_DEFINITION: .aws/task-definition.json # ✅ Path to your ECS Task Definition file
-  CONTAINER_NAME: my-container             # ✅ Container name in your ECS task definition
+  AWS_REGION          : ap-southeast-1
+  ECR_REPOSITORY      : my-repo-${{ github.ref_name }}
+  ECS_SERVICE         : my-ecs-service
+  ECS_CLUSTER         : my-ecs-cluster
+  ECS_TASK_DEFINITION : .aws/task-definition.json
+  CONTAINER_NAME      : my-container
 
 permissions:
   contents: read
@@ -30,6 +30,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v1.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -65,10 +71,4 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          echo "Deployment to Amazon ECS completed successfully!"
-
-      - name: SonarQube Scan
-        uses: sonarsource/sonarqube-scan-action@v1.0.0
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          echo "Deployment verified."

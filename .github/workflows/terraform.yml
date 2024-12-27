@@ -1,7 +1,7 @@
 name: 'Terraform Deployment'
 
 on:
-  workflow_dispatch:  # This allows manual triggering from GitHub UI
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -17,11 +17,9 @@ jobs:
         shell: bash
 
     steps:
-    # ✅ Checkout the repository
     - name: Checkout
       uses: actions/checkout@v4
 
-    # ✅ Setup AWS CLI
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -29,32 +27,25 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-southeast-1
 
-    # ✅ Install Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.10.3 # Update if you have a specific version
+        terraform_version: 1.10.3
 
-    # ✅ Terraform Initialization
     - name: Terraform Init
       run: terraform init -input=false
 
-    # ✅ Validate Terraform Files
     - name: Terraform Validate
       run: terraform validate
 
-    # # ✅ Check Terraform Format
-    # - name: Terraform Format
-    #   run: terraform fmt -check
-
-    # ✅ Terraform Plan
     - name: Terraform Plan
-      run: terraform plan -input=false -out=tfplan
+      env:
+        ECR_REPOSITORY: my-repo-${{ github.ref_name }}
+      run: terraform plan -input=false -out=tfplan -var="environment=production" -var="repository_name=${{ env.ECR_REPOSITORY }}"
 
-    # ✅ Terraform Apply (Only on Main Branch Push)
     - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve tfplan
-
 
   terraform-pre-prod:
     name: 'Terraform Deployment - Pre-Production'
@@ -66,11 +57,9 @@ jobs:
         shell: bash
 
     steps:
-    # ✅ Checkout the repository
     - name: Checkout
       uses: actions/checkout@v4
 
-    # ✅ Setup AWS CLI
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
@@ -78,28 +67,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-southeast-1
 
-    # ✅ Install Terraform
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
-        terraform_version: 1.10.3 # Update if you have a specific version
+        terraform_version: 1.10.3
 
-    # ✅ Terraform Initialization
     - name: Terraform Init
       run: terraform init -input=false
 
-    # ✅ Validate Terraform Files
     - name: Terraform Validate
       run: terraform validate
 
-    # # ✅ Check Terraform Format
-    # - name: Terraform Format
-    #   run: terraform fmt -check
+    - name : Terraform Plan
+      env:
+        ECR_REPOSITORY: my-repo-${{ github.ref_name }}
+      run: terraform plan -input=false -out=tfplan -var="environment=pre-prod" -var="repository_name=${{ env.ECR_REPOSITORY }}"
 
-    # ✅ Terraform Plan
-    - name: Terraform Plan
-      run: terraform plan -input=false -out=tfplan
-
-    # ✅ Terraform Apply (Only on Main Branch Push)
     - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
       run: terraform apply -auto-approve tfplan

@@ -6,12 +6,19 @@ variable "region" {
 
 variable "repository_name" {
   description = "Name of the ECR repository"
-  default     = "sample-repo8"
 }
 
 variable "ecs_service_name" {
   description = "ECS Service Name"
   default     = "my-ecs-service"
+}
+
+variable "environment" {
+  description = "Deployment environment (e.g., prod, pre-prod)"
+}
+
+variable "image_tag" {
+  description = "Tag of the Docker image"
 }
 
 # Provider Configuration
@@ -81,7 +88,7 @@ resource "aws_security_group" "example" {
 
 # ECR Repository Resource
 resource "aws_ecr_repository" "example" {
-  name                 = var.repository_name
+  name                 = "${var.repository_name}-${var.environment}"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
@@ -89,8 +96,8 @@ resource "aws_ecr_repository" "example" {
   }
 
   tags = {
-    Name        = var.repository_name
-    Environment = "Production"
+    Name        = "${var.repository_name}-${var.environment}"
+    Environment = var.environment
   }
 }
 
@@ -110,7 +117,7 @@ resource "aws_ecs_task_definition" "example" {
   memory                   = "512"
   container_definitions    = jsonencode([{
     name      = "my-container"
-    image     = "${aws_ecr_repository.example.repository_url}:latest"
+    image     = "${aws_ecr_repository.example.repository_url}:${var.image_tag}"
     essential = true
     portMappings = [{
       containerPort = 80
