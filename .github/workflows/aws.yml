@@ -50,6 +50,7 @@ jobs:
             -Dsonar.organization=my_organization
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.scanner.skipPluginDownload=true
             -X
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -58,6 +59,9 @@ jobs:
           JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64
           PATH: /usr/local/bin:/usr/bin:/bin:/opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64/bin:$PATH
           SONAR_SCANNER_OPTS: "-Xmx1024m"
+
+      - name: Clear SonarQube Cache
+        run: rm -rf ~/.sonar/cache
 
       - name: Login to Amazon ECR
         id: login-ecr
