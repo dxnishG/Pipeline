@@ -29,11 +29,6 @@ The CI/CD pipeline is implemented using GitHub Actions and includes:
 - Integrating Sonarqube for code quality analysis
 - Deploying the container image from ECR to Fargate for running batch jobs
 
-## Assumptions
-
-- AWS credentials are stored as GitHub secrets.
-- SonarQube server and token are configured as GitHub secrets.
-- The project uses the `ap-southeast-1` region by default.
 
 ## Usage
 
