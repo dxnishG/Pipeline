@@ -48,6 +48,7 @@ jobs:
         env:
           JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.0-0/x64
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       - name: Login to Amazon ECR
         id: login-ecr
