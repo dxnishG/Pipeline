@@ -38,7 +38,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v1.1.0
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
         with:
           args: >
             -Dsonar.projectKey=my_project_key
