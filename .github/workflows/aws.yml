@@ -47,10 +47,11 @@ jobs:
         with:
           args: >
             -Dsonar.projectKey=dxnishg
-            -Dsonar.organization=dxnishg
+            -Dsonar.organization=dxnishG
             -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
             -Dsonar.scanner.skipPluginDownload=true
+            -sonar.scanner.skipSystemTruststore=true
             -X
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
