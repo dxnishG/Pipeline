@@ -1,48 +1,66 @@
-## Architecture
+# Cloud Infrastructure & CI/CD Pipeline for Web Application
 
-This project sets up a cloud infrastructure and CI/CD pipeline for a web application with two main components: Development and Batch Job.
+This project sets up a fully automated cloud infrastructure and CI/CD pipeline for a web application using **AWS** and **Terraform**. It leverages GitHub Actions to automate infrastructure provisioning and application deployment on AWS services.
 
-### Development Components
-- **CodeCommit**: Repository to store source code.
-- **CodeBuild**: For building and packaging the application.
-- **ECR**: To store and manage container images.
+---
 
-### Batch Job Components
-- **S3 Buckets**: For storing input and output data.
-- **Fargate**: For running batch jobs.
+## 🏗️ Infrastructure Setup
 
-## Infrastructure
+The infrastructure is provisioned using **Terraform** and includes the following components:
 
-The infrastructure is provisioned using Terraform and includes:
-- VPC with subnets
-- IAM roles and policies for CodeBuild and Fargate
-- S3 buckets for input and output data
-- ECR repository
-- Security measures (VPC security groups, IAM permissions)
+- **VPC** with multiple subnets
+- **IAM Roles** and **Policies**
+- **S3 Buckets** for storage
+- **ECR Repository** for container images
+- **ECS Cluster** and **Services** for container orchestration
+- **Application Load Balancer** for routing traffic
 
-## CI/CD Pipeline
+---
 
-The CI/CD pipeline is implemented using GitHub Actions and includes:
-- Pulling the latest code from the repository
-- Building and packaging the application using CodeBuild
-- Pushing the resulting container image to ECR
-- Integrating Sonarqube for code quality analysis
-- Deploying the container image from ECR to Fargate for running batch jobs
+## 🚀 CI/CD Pipeline
 
+The CI/CD pipeline is implemented with **GitHub Actions** to automate the deployment process:
 
-## Usage
+### Workflows:
+1. **`terraform.yml`**: Automates the provisioning of cloud infrastructure using Terraform. The idea behind this is to manually trigger the Action.
+2. **`aws.yml`**: Automatically deploys the web application to **ECS** whenever the repository receives a new push and sync.
 
-1. **Terraform Deployment**:
-   - Trigger the `Terraform Deployment` workflow from GitHub Actions to provision the infrastructure.
+---
 
-2. **Application Deployment**:
-   - Trigger the `Deploy to Amazon` workflow from GitHub Actions to deploy the application to ECS.
+## 🔧 Deployment Steps
 
-## Files
+Follow these steps to deploy the infrastructure and application:
 
-- `.aws/task-definition.json`: ECS task definition.
-- `.github/workflows/aws.yml`: GitHub Actions workflow for deploying to Amazon ECS.
-- `.github/workflows/terraform.yml`: GitHub Actions workflow for deploying infrastructure using Terraform.
-- `Dockerfile`: Dockerfile for building the application image.
-- `ecr.tf`: Terraform script for provisioning the infrastructure.
-- `index.html`: Sample HTML file for the web application.
+### 1. **Provision Infrastructure with Terraform**
+   - Trigger the `Terraform Deployment` workflow from **GitHub Actions** to provision the required AWS infrastructure.
+   
+### 2. **Deploy Application**
+   - The `aws.yml` GitHub Actions workflow will automatically deploy the latest version of the application to ECS upon each code push.
+
+---
+
+## 📊 CI/CD History
+
+You can view the complete history of CI/CD runs and check for any potential issues in the pipeline on the [GitHub Actions](https://github.com/dxnishG/Pipeline/actions) page.
+
+---
+
+## 📁 Project Files
+
+Here are the key files in this project:
+
+- **`.aws/task-definition.json`**: ECS task definition for the application container.
+- **`.github/workflows/aws.yml`**: GitHub Actions workflow for deploying the application to ECS.
+- **`.github/workflows/terraform.yml`**: GitHub Actions workflow for provisioning infrastructure with Terraform.
+- **`Dockerfile`**: Dockerfile used to build the application image.
+- **`ecr.tf`**: Terraform configuration for setting up the ECR repository and related resources.
+- **`index.html`**: A sample HTML file representing the web application.
+
+---
+
+## 📞 Contact
+
+If you have any questions or feedback, feel free to reach out!
+
+- **Email**: [danishghani06@gmail.com](mailto:danishghani06@gmail.com)
+- **GitHub**: [@dxnishG](https://github.com/dxnishG)
